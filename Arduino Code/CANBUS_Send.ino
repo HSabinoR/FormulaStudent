@@ -16,7 +16,7 @@ void setup() {
 
 void loop() {
   int raw_Value = analogRead(potPin);
-  sendNumber(0x023, raw_Value);
+  sendNumber(0x123, raw_Value);
 }
 
 void sendNumber(uint32_t id, int potValue) {
