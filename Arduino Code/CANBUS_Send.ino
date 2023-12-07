@@ -1,31 +1,31 @@
-#include <mcp2515.h>
+#include <mcp_can.h>
 #include <SPI.h>
-struct can_frame message;
-const int potPin = A0;
-MCP2515 mcp2515(10);    // CS pin connected to digital pin 10
+
+const int sensorPin = A0;
+
+MCP_CAN mcp2515(10);    // CS pin connected to digital pin 10
 
 void setup() {
   Serial.begin(9600);
-  if(mcp2515.begin(MCP_ANY, CAN_100KBPS, MCP_8MHZ) == MCP2515::ERROR_OK) {
+  if(mcp2515.begin(MCP_ANY, CAN_100KBPS, MCP_8MHZ) == CAN_OK) {
     Serial.println("MCP2515 Initialized!!");
   } else{
     Serial.println("Error Intializing MCP2515!!");
     while(1);
   }
+  mcp2515.setMode(MCP_NORMAL);
 }
 
 void loop() {
-  int raw_Value = analogRead(potPin);
-  sendNumber(0x123, raw_Value);
+  int raw_Value = analogRead(sensorPin);
+  sendNumber(0x123, 0, 2, raw_Value);
 }
 
-void sendNumber(uint32_t id, int potValue) {
-  message.can_id = id;
-  message.can_dlc = 2;
+void sendNumber(uint32_t id, int std, int dlc, int sensorValue) {
+  byte data[dlc] = {};
 
-  message.data[0] = lowByte(potValue);
-  message.data[1] = highByte(potValue);
+  data[0] = lowByte(sensorValue);
+  data[1] = highByte(sensorValue);
 
-  message.sendMessage(&message);
-
+  mcp2515.sendMsgBuf(id, std, dlc, data);
 }
