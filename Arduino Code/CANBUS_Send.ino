@@ -21,7 +21,7 @@ void loop() {
   sendNumber(0x123, 0, 2, raw_Value);
 }
 
-void sendNumber(uint32_t id, int std, int dlc, int sensorValue) {
+void sendNumber(uint32_t id, int ext, int dlc, int sensorValue) {
   byte data[dlc] = {};
 
   data[0] = lowByte(sensorValue);
