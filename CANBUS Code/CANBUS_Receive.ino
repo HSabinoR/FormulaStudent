@@ -21,7 +21,7 @@ void setup()
     Serial.println("Error Initializing MCP2515...");
   
   mcp2515.setMode(MCP_NORMAL);
-
+  
   pinMode(CAN_INT, INPUT);
 }
 
