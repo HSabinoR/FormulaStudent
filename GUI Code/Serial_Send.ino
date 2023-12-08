@@ -1,4 +1,3 @@
-
 const int sensorPin;
 void setup() {
     Serial.begin(9600);
