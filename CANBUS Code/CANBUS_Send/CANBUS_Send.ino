@@ -29,4 +29,3 @@ void sendNumber(uint32_t id, int ext, int dlc, int sensorValue) {
 
   mcp2515.sendMsgBuf(id, std, dlc, data);
 }
-// change
