@@ -6,7 +6,7 @@
 #define CSN_PIN 10
 
 #define INTERVAL_MS_SIGNAL_LOST 1000
-#define INTERVAL_MS_SIGNAL_RETRY 50
+#define INTERVAL_MS_SIGNAL_RETRY 250
 
 RF24 radio(CE_PIN, CSN_PIN);
 
@@ -17,7 +17,7 @@ struct payload {
   byte data1;
   char data2;
 
-  byte pot_value;
+  //byte pot_value;
 };
 
 payload payload;
@@ -58,8 +58,8 @@ void loop()
     Serial.print("Data2:");
     Serial.println(payload.data2);
 
-    Serial.print("Data3:");
-    Serial.println(payload.pot_value);
+    //Serial.print("Data3:");
+    //Serial.println(payload.pot_value);
 
     lastSignalMillis = currentMillis;
   }
@@ -67,11 +67,12 @@ void loop()
   if (currentMillis - lastSignalMillis > INTERVAL_MS_SIGNAL_LOST) {
     lostConnection();
   }
+  delay(INTERVAL_MS_SIGNAL_RETRY);
 }
 
 void lostConnection()
 {
   Serial.println("We have lost connection, preventing unwanted behavior");
 
-  delay(INTERVAL_MS_SIGNAL_RETRY);
+  
 }

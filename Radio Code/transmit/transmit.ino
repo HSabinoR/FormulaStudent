@@ -8,7 +8,7 @@
 
 #define POT_PIN 
 
-#define INTERVAL_MS_TRANSMISSION 50
+#define INTERVAL_MS_TRANSMISSION 250
 
 RF24 radio(CE_PIN, CSN_PIN);
 
@@ -18,7 +18,7 @@ const byte address[6] = "00001";
 struct payload {
   byte data1;
   char data2;
-  byte pot_value;
+  //byte pot_value;
 };
 
 payload payload;
@@ -40,7 +40,7 @@ void setup()
   //Default value is the maximum 32 bytes
   radio.setPayloadSize(sizeof(payload));
 
-  radio.openWritingPipe(address);
+  radio.openWriti ngPipe(address);
   radio.stopListening();
 
   //radio.printDetails();
@@ -51,7 +51,7 @@ void loop()
   payload.data1 = 123;
   payload.data2 = 'x';
 
-  payload.pot_value = analogRead(POT_PIN);
+  //payload.pot_value = analogRead(POT_PIN);
 
   if(radio.write(&payload, sizeof(payload))) {
     Serial.print("Data1:");
@@ -60,8 +60,8 @@ void loop()
     Serial.print("Data2:");
     Serial.println(payload.data2);
 
-    Serial.print("Data3:");
-    Serial.println(payload.pot_value);
+    //Serial.print("Data3:");
+    //Serial.println(payload.pot_value);
 
     Serial.println("Sent");
 
