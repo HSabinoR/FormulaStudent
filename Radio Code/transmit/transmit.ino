@@ -1,6 +1,7 @@
 #include "SPI.h"
 #include "RF24.h"
 #include "nRF24L01.h"
+//#include <printf.h>
 
 #define CE_PIN 9
 #define CSN_PIN 10
@@ -25,6 +26,7 @@ payload payload;
 void setup()
 {
   Serial.begin(115200);
+  //printf_begin();
 
   radio.begin();
 
@@ -34,12 +36,14 @@ void setup()
   radio.setDataRate(RF24_250KBPS); //(RF24_250KBPS|RF24_1MBPS|RF24_2MBPS)
 
   radio.setPALevel(RF24_PA_MAX); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX)
-  
+
   //Default value is the maximum 32 bytes
   radio.setPayloadSize(sizeof(payload));
 
   radio.openWritingPipe(address);
   radio.stopListening();
+
+  //radio.printDetails();
 }
 
 void loop()
