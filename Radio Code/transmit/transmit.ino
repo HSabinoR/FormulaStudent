@@ -26,24 +26,27 @@ payload payload;
 void setup()
 {
   Serial.begin(115200);
-  //printf_begin();
 
-  radio.begin();
+  if (radio.isChipConnected()) {
+    radio.begin()
+    Serial.println("nRF24L01 Intialiazed!")
+    
+    //Append ACK packet from the receiving radio back to the transmitting radio
+    radio.setAutoAck(false); //(true|false)
 
-  //Append ACK packet from the receiving radio back to the transmitting radio
-  radio.setAutoAck(false); //(true|false)
-  //Set the transmission datarate
-  radio.setDataRate(RF24_250KBPS); //(RF24_250KBPS|RF24_1MBPS|RF24_2MBPS)
+    //Set the transmission datarate
+    radio.setDataRate(RF24_250KBPS); //(RF24_250KBPS|RF24_1MBPS|RF24_2MBPS)
 
-  radio.setPALevel(RF24_PA_MAX); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX)
+    radio.setPALevel(RF24_PA_MAX); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX)
 
-  //Default value is the maximum 32 bytes
-  radio.setPayloadSize(sizeof(payload));
+    //Default value is the maximum 32 bytes
+    radio.setPayloadSize(sizeof(payload));
 
-  radio.openWriti ngPipe(address);
-  radio.stopListening();
-
-  //radio.printDetails();
+    radio.openWritingPipe(address);
+    radio.stopListening();
+  }else{
+    Serial.println("No connection between nRF24L01 and Arduino! ")
+  }
 }
 
 void loop()
