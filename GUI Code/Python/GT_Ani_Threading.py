@@ -24,15 +24,14 @@ bs = [] #store braking power
 ts = [] #for throttle power
 i = 0
 
+# Similar to Arduino's map function
 def map_range(x, in_min, in_max, out_min, out_max):
   return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
 
-
+# Function to run in independant thread
 def read_ser():
     global i, xs, bs, ts
     while True:
-        
-        
         #Aquire and parse data from serial port
         line = ser.readline()
         line_as_list = line.split(b',')
