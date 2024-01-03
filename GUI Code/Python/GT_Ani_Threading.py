@@ -1,3 +1,5 @@
+### Runtime is at least 17 mins. Full runtime is unknown right now### 
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib import style
