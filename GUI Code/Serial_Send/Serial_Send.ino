@@ -1,16 +1,16 @@
-const int sensorPin;
+//const int sensorPin;
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 void loop() {
-    int sensorValue = analogRead(sensorPin);
-    int testValue = 25;
+    //int sensorValue = analogRead(sensorPin);
+    int testV1 = random(0,1023);
+    int testV2 = random(0,1023);
 
-    sensorValue = map(sensorValue, 0, 1023, -180, 180);
-
-    Serial.print(sensorValue);
+    Serial.print(testV1);
     Serial.print(",");
-    Serial.println(testValue);
-    delay(50);
+    Serial.print(testV2);
+    Serial.print('\n');
+    delay(20);
 }
