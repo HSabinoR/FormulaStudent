@@ -5,12 +5,15 @@ void setup() {
 
 void loop() {
     //int sensorValue = analogRead(sensorPin);
-    int testV1 = random(0,1023);
-    int testV2 = random(0,1023);
+    int brake_power = random(0,1023);
+    int throttle_power = random(0,1023);
+    int wheel_angle = random(0,1023);
 
-    Serial.print(testV1);
+    Serial.print(brake_power);
     Serial.print(",");
-    Serial.print(testV2);
+    Serial.print(throttle_power);
+    Serial.print(",");
+    Serial.print(wheel_angle);
     Serial.print('\n');
     delay(20);
 }
