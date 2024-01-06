@@ -15,5 +15,5 @@ void loop() {
     Serial.print(",");
     Serial.print(wheel_angle);
     Serial.print('\n');
-    delay(20);
+    //delay(20);
 }
