@@ -4,6 +4,7 @@ import serial
 import threading
 import pandas as pd
 import time
+from matplotlib.widgets import Button
 
 #initialize serial port
 ser = serial.Serial()
@@ -34,7 +35,6 @@ angle = [] # store wheel angle
 lock_angle = threading.Lock()
 
 running = True
-
 
 def map_range(x, in_min, in_max, out_min, out_max): # Similar to Arduino's map function
   return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
@@ -80,14 +80,34 @@ def read_ser(): # Serial reading to run in independant thread
         running = False
 
 
+def save_BT_graph(event):
+    global brake, throttle
+    try:
+        with lock_brake_throttle:
+            with lock_angle:
+                df = pd.DataFrame({'Brake Power': brake[-1000:], 'Throttle Power': throttle[-1000:]})
+                df.to_csv('manual_save_BT_' + time.strftime('%Y-%m-%d %H-%S') + '.csv', index=False)
+    except Exception as e:
+        print(f"Something went wrong with saving sensor data to CSV file: {e} \n")
+
+def save_WA_graph(event):
+    global angle
+    try:
+        with lock_brake_throttle:
+            with lock_angle:
+                df = pd.DataFrame({'Wheel Angle': angle[-1000:]})
+                df.to_csv('manual_save_WA_' + time.strftime('%Y-%m-%d %H-%S') + '.csv', index=False)
+    except Exception as e:
+        print(f"Something went wrong with saving sensor data to CSV file: {e} \n")
+
 
 def animate(i, brake, throttle, angle): # This function is called periodically from FuncAnimation
     with lock_brake_throttle:
-        brake = brake[-100:]
-        throttle = throttle[-100:]
+        brake = brake[-2000:]
+        throttle = throttle[-2000:]
 
     with lock_angle:
-        angle = angle[-100:]
+        angle = angle[-2000:]
 
     # Draw braking and throttle graph
     ax.clear()
@@ -105,21 +125,20 @@ def animate(i, brake, throttle, angle): # This function is called periodically f
     # Format braking and throttle power plot
     ax.set(xlabel="Time", ylabel="Power(%)")
     ax.legend(fontsize="x-large", loc='upper left')
-    ax.axis([0, 100, 0, 100])
+    ax.axis([0, 2000, 0, 100])
 
     # Format wheel angle plot
     ax2.set(xlabel="Time", ylabel="Angle(°)")
     ax2.legend(fontsize="x-large", loc='upper left')
-    ax2.axis([0, 100, 0, 360])
+    ax2.axis([0, 2000, 0, 360])
 
     # Calculate the time since the program started
     elapsed_time = time.time() - start_time
 
     #Update time text
-    #plt.text(1.25, 1.2, 'Time(Secs): {:.2f}'.format(float(elapsed_time)), transform=ax.transAxes, horizontalalignment='right',verticalalignment='top', fontsize=22) # Prints Only in seconds
-    plt.text(-30,400, 'Program Runtime: ' + time.strftime("%H:%M:%S.{}".format(str(elapsed_time % 1)[2:])[:11], time.gmtime(elapsed_time))) # Prints into hours, minutes and seconds
+    time_text.set_text('Program Runtime: ' + time.strftime("%H:%M:%S.{}".format(str(elapsed_time % 1)[2:])[:11], time.gmtime(elapsed_time))) # Prints into hours, minutes and seconds
 
-def save_data_on_close(event):
+def save_data_on_close(event): # Save sensor data when window is closed
     global running
     if event.name == 'close_event':
         running = False
@@ -131,10 +150,9 @@ def save_data_on_close(event):
         except Exception as e:
             print(f"Something went wrong with saving sensor data to sensor_data.csv: {e} \n")
         finally:
-            ser.close()
+            ser.close() # Closes serial port
             plt.close()
             run_time = time.time() - start_time
-            #print("Program ran for {:.2f} seconds".format(run_time)) # Prints Only in seconds
             print("Program Exited!!")
             print('Program Runtime: ' + time.strftime("%H:%M:%S.{}".format(str(run_time % 1)[2:])[:11], time.gmtime(run_time))) # Prints into hours, minutes and seconds
         
@@ -154,7 +172,20 @@ except Exception as e:
 # Maximize window
 plt.get_current_fig_manager().window.state('zoomed')
 
+time_text = fig.text(.43, 0.94, '', transform=fig.transFigure, verticalalignment='bottom', fontsize=12)
+
+# Set window title
 fig.canvas.manager.set_window_title('Sensor Data')
+
+b1_axes = plt.axes([0.42,0.89,0.056,0.025]) # left,bottom, width, height
+save_Current_BT = Button(b1_axes, "Save Current Graph" )
+save_Current_BT.label.set_fontsize(7)
+save_Current_BT.on_clicked(save_BT_graph)
+
+b2_axes = plt.axes([0.843,0.89, 0.056, 0.025]) # left,bottom, width, height
+save_Current_WA = Button(b2_axes, "Save Current Graph" )
+save_Current_WA.label.set_fontsize(7)
+save_Current_WA.on_clicked(save_WA_graph)
 
 # Set up plot to call animate() function periodically
 ani = animation.FuncAnimation(fig, animate, fargs=(brake, throttle, angle), cache_frame_data=False, interval=0)
