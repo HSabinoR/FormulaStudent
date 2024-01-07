@@ -1,14 +1,26 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import serial
+import serial.tools.list_ports
 import threading
 import pandas as pd
 import time
 from matplotlib.widgets import Button
 
+arduino_ports = [
+    p.device
+    for p in serial.tools.list_ports.comports()
+    if 'USB-SERIAL CH340' in p.description
+]
+
+if not arduino_ports:
+    raise IOError("No Arduino found\n")
+if len(arduino_ports) > 1:
+    print('Multiple Arduinos found - using the first\n')
+
 #initialize serial port
 ser = serial.Serial()
-ser.port = 'COM5' #Arduino serial port
+ser.port = arduino_ports[0] #Arduino serial port
 ser.baudrate = 115200
 ser.timeout = 10 #specify timeout when using readline()
 try:
