@@ -7,6 +7,7 @@ import pandas as pd
 import time
 from matplotlib.widgets import Button
 
+# Checks each port's description
 arduino_ports = [
     p.device
     for p in serial.tools.list_ports.comports()
@@ -18,11 +19,12 @@ if not arduino_ports:
 if len(arduino_ports) > 1:
     print('Multiple Arduinos found - using the first\n')
 
-#initialize serial port
+# Initialize serial port
 ser = serial.Serial()
-ser.port = arduino_ports[0] #Arduino serial port
-ser.baudrate = 115200
-ser.timeout = 10 #specify timeout when using readline()
+ser.port = arduino_ports[0] # Arduino serial port
+ser.baudrate = 115200 # Specify baudrate
+ser.timeout = 10 # Specify timeout when using readline()
+
 try:
     ser.open()
     if ser.is_open:
