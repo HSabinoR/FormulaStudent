@@ -10,7 +10,7 @@ from matplotlib.widgets import Button
 arduino_ports = [
     p.device
     for p in serial.tools.list_ports.comports()
-    if 'USB-SERIAL CH340' in p.description
+    if 'USB-SERIAL CH340' in p.description or 'Arduino' in p.description
 ]
 
 if not arduino_ports:
