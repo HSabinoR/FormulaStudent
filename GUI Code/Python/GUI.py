@@ -186,20 +186,23 @@ except Exception as e:
 # Maximize window
 plt.get_current_fig_manager().window.state('zoomed')
 
+# Sets up the time textb
 time_text = fig.text(.43, 0.94, '', transform=fig.transFigure, verticalalignment='bottom', fontsize=12)
 
 # Set window title
 fig.canvas.manager.set_window_title('Sensor Data')
 
+# Format button 1
 b1_axes = plt.axes([0.42,0.89,0.056,0.025]) # left,bottom, width, height
 save_Current_BT = Button(b1_axes, "Save Current Graph" )
 save_Current_BT.label.set_fontsize(7)
-save_Current_BT.on_clicked(save_BT_graph)
+save_Current_BT.on_clicked(save_BT_graph) # Checks if button is pressed
 
+# Format button 2
 b2_axes = plt.axes([0.843,0.89, 0.056, 0.025]) # left,bottom, width, height
 save_Current_WA = Button(b2_axes, "Save Current Graph" )
 save_Current_WA.label.set_fontsize(7)
-save_Current_WA.on_clicked(save_WA_graph)
+save_Current_WA.on_clicked(save_WA_graph) # Checks if button is pressed
 
 # Set up plot to call animate() function periodically
 ani = animation.FuncAnimation(fig, animate, fargs=(brake, throttle, angle), cache_frame_data=False, interval=0)
