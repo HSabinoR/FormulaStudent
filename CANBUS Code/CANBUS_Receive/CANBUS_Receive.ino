@@ -4,10 +4,10 @@
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
-char msgString[128];                        // Array to store serial string
+char msgString[128]; // Array to store serial string
 
-#define CAN_INT 2                              // Set INT to pin 2
-MCP_CAN mcp2515(10);                               // Set CS to pin 10
+#define CAN_INT 2 // Set INT to pin 2
+MCP_CAN mcp2515(10); // Set CS to pin 10
 
 
 void setup()
