@@ -1,35 +1,46 @@
 #include "SPI.h"
 #include "RF24.h"
 #include "nRF24L01.h"
-//#include <printf.h>
+#include <printf.h>
+
+const int brakesPin = A0;
+const int throttlePin = A2;
+const int wheelPin = A3;
+
 
 #define CE_PIN 9
 #define CSN_PIN 10
 
-#define POT_PIN 
-
-#define INTERVAL_MS_TRANSMISSION 250
+#define INTERVAL_MS_TRANSMISSION 2
 
 RF24 radio(CE_PIN, CSN_PIN);
 
-const byte address[6] = "00001";
+//const byte address[6] = "00001";
+const uint8_t address = 0xCC;
 
 //NRF24L01 buffer limit is 32 bytes (max struct size)
 struct payload {
-  byte data1;
-  char data2;
-  //byte pot_value;
+  int brake_power;
+  int throttle_power;
+  int wheel_angle;
 };
 
 payload payload;
 
+
 void setup()
 {
-  Serial.begin(115200);
+  printf_begin();
+  Serial.begin(9600);
+  radio.begin();
 
+  //Serial.println();
+  //radio.printDetails();
+  //Serial.println();
+
+  
   if (radio.isChipConnected()) {
-    radio.begin()
-    Serial.println("nRF24L01 Intialiazed!")
+    //Serial.println("nRF24L01 Intialiazed!");
     
     //Append ACK packet from the receiving radio back to the transmitting radio
     radio.setAutoAck(false); //(true|false)
@@ -37,37 +48,39 @@ void setup()
     //Set the transmission datarate
     radio.setDataRate(RF24_2MBPS); //(RF24_250KBPS|RF24_1MBPS|RF24_2MBPS)
 
-    radio.setPALevel(RF24_PA_MAX); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX)
+    radio.setPALevel(RF24_PA_MIN); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX)
 
     //Default value is the maximum 32 bytes
-    radio.setPayloadSize(sizeof(payload));
+    radio.setPayloadSize(6);
 
     radio.openWritingPipe(address);
     radio.stopListening();
+    
+    Serial.println();
+    radio.printDetails();
+    Serial.println();
   }else{
-    Serial.println("No connection between nRF24L01 and Arduino! ")
+    Serial.println("No connection between nRF24L01 and Arduino! ");
   }
 }
 
 void loop()
 {
-  payload.data1 = 123;
-  payload.data2 = 'x';
-
-  //payload.pot_value = analogRead(POT_PIN);
+  payload.brake_power = analogRead(brakesPin);
+  payload.throttle_power = analogRead(throttlePin);
+  payload.wheel_angle = analogRead(wheelPin);
 
   if(radio.write(&payload, sizeof(payload))) {
-    Serial.print("Data1:");
-    Serial.println(payload.data1);
-
-    Serial.print("Data2:");
-    Serial.println(payload.data2);
-
-    //Serial.print("Data3:");
-    //Serial.println(payload.pot_value);
-
-    Serial.println("Sent");
-
+    /*Serial.print("Brake Power: ");
+    Serial.print("Sent: (");
+    Serial.print(payload.brake_power);
+    Serial.print(" | Throttle Power: ");
+    Serial.print(payload.throttle_power);
+    Serial.print(" | Wheel Angle: ");
+    Serial.print(payload.wheel_angle);
+    Serial.println(")");
+    */
+    
   }else {
     Serial.println("Error! Payload not sent");
   }
