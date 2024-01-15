@@ -5,7 +5,7 @@ import serial.tools.list_ports
 import threading
 import pandas as pd
 import time
-from matplotlib.widgets import Button
+from matplotlib.widgets import Button, Slider, CheckButtons
 
 # Checks each port's description
 arduino_ports = [
@@ -22,7 +22,7 @@ if len(arduino_ports) > 1:
 # Initialize serial port
 ser = serial.Serial()
 ser.port = arduino_ports[0] # Arduino serial port
-ser.baudrate = 115200 # Specify baudrate
+ser.baudrate = 250000 # Specify baudrate
 ser.timeout = 10 # Specify timeout when using readline()
 
 try:
@@ -99,7 +99,7 @@ def save_BT_graph(event):
     try:
         with lock_brake_throttle:
             with lock_angle:
-                df = pd.DataFrame({'Brake Power': brake[-1000:], 'Throttle Power': throttle[-1000:]})
+                df = pd.DataFrame({'Brake Power': brake[-BTx_axis_slider.val:], 'Throttle Power': throttle[-BTx_axis_slider.val:]})
                 df.to_csv('manual_save_BT_' + time.strftime('%Y-%m-%d %H-%S') + '.csv', index=False)
     except Exception as e:
         print(f"Something went wrong with saving sensor data to CSV file: {e} \n")
@@ -109,19 +109,29 @@ def save_WA_graph(event):
     try:
         with lock_brake_throttle:
             with lock_angle:
-                df = pd.DataFrame({'Wheel Angle': angle[-1000:]})
+                df = pd.DataFrame({'Wheel Angle': angle[-WAx_axis_slider.val:]})
                 df.to_csv('manual_save_WA_' + time.strftime('%Y-%m-%d %H-%S') + '.csv', index=False)
     except Exception as e:
         print(f"Something went wrong with saving sensor data to CSV file: {e} \n")
 
 
 def animate(i, brake, throttle, angle): # This function is called periodically from FuncAnimation
+    BTstatus = BTcheck.get_status()[0]
+    WAstatus = WAcheck.get_status()[0]
+
     with lock_brake_throttle:
-        brake = brake[-2000:]
-        throttle = throttle[-2000:]
+        if BTstatus == True:
+            brake = brake
+            throttle = throttle
+        else:
+            brake = brake[-BTx_axis_slider.val:]
+            throttle = throttle[-BTx_axis_slider.val:]
 
     with lock_angle:
-        angle = angle[-2000:]
+        if WAstatus == True:
+            angle = angle[-1000000:]
+        else:
+            angle = angle[-WAx_axis_slider.val:]
 
     # Draw braking and throttle graph
     ax.clear()
@@ -139,12 +149,21 @@ def animate(i, brake, throttle, angle): # This function is called periodically f
     # Format braking and throttle power plot
     ax.set(xlabel="Time", ylabel="Power(%)")
     ax.legend(fontsize="x-large", loc='upper left')
-    ax.axis([0, 2000, 0, 100])
+    
+    if BTstatus == True:
+            ax.axis([0, len(brake), 0, 100])
+    else:
+        ax.axis([0, BTx_axis_slider.val, 0, 100])
+    
 
     # Format wheel angle plot
     ax2.set(xlabel="Time", ylabel="Angle(°)")
     ax2.legend(fontsize="x-large", loc='upper left')
-    ax2.axis([0, 2000, 0, 360])
+
+    if WAstatus == True:
+        ax2.axis([0, len(angle), 0, 360])
+    else:
+        ax2.axis([0, WAx_axis_slider.val, 0, 360])
 
     # Calculate the time since the program started
     elapsed_time = time.time() - start_time
@@ -170,6 +189,43 @@ def save_data_on_close(event): # Save sensor data when window is closed
             print("Program Exited!!")
             print('Program Runtime: ' + time.strftime("%H:%M:%S.{}".format(str(run_time % 1)[2:])[:11], time.gmtime(run_time))) # Prints into hours, minutes and seconds
         
+init_x = 2000
+
+BTx_axis = fig.add_axes([0.15, 0.4, 0.3, 0.02])
+BTx_axis_slider = Slider(
+    ax=BTx_axis,
+    label='Time Frame',
+    valmin=500,
+    valmax=10000,
+    valstep=500,
+    valinit=init_x,
+)
+
+WAx_axis = fig.add_axes([0.6, 0.4, 0.3, 0.02])
+WAx_axis_slider = Slider(
+    ax=WAx_axis,
+    label='Time Frame',
+    valmin=500,
+    valmax=10000,
+    valstep=500,
+    valinit=init_x,
+)
+
+label = ["Start-Current Time Frame"]
+
+rax = fig.add_axes([0.15, 0.35, 0.13, 0.04])
+BTcheck = CheckButtons(
+    ax=rax,
+    labels=label,
+    check_props={'facecolor': 'red'},
+)
+
+cax = fig.add_axes([0.6, 0.35, 0.13, 0.04])
+WAcheck = CheckButtons(
+    ax=cax,
+    labels=label,
+    check_props={'facecolor': 'red'},
+)
 
 # Connect the function to the close event
 plt.gcf().canvas.mpl_connect('close_event', save_data_on_close)

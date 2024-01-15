@@ -1,6 +1,6 @@
 const int brakesPin = A0;
 const int throttlePin = A2;
-//const int wheelPin;
+const int wheelPin = A3;
 
 void setup() {
     Serial.begin(115200);
@@ -9,11 +9,11 @@ void setup() {
 void loop() {
     int brake_power = analogRead(brakesPin);
     int throttle_power = analogRead(throttlePin);
-    //int wheel_angle = analogRead(wheelPin);
+    int wheel_angle = analogRead(wheelPin);
 
     //int brake_power = random(0,1023);
     //int throttle_power = random(0,1023);
-    int wheel_angle = random(0,1023);
+    //int wheel_angle = random(0,1023);
 
     Serial.print(brake_power);
     Serial.print(",");
