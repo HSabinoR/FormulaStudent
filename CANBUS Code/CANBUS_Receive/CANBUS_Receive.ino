@@ -28,25 +28,21 @@ struct payload {
 
 payload payload;
 
-mcp2515.setFilter(MCP2515::MASK0, MCP2515::FILTER0, 0x00000123);
-mcp2515.setFilter(MCP2515::MASK0, MCP2515::FILTER1, 0x00000456); 
-mcp2515.setFilter(MCP2515::MASK1, MCP2515::FILTER2, 0x00000789);
-
 void setup()
 {
   Serial.begin(115200);
   /// MCP2515 Intialization ///
 
   // Initialize MCP2515 running at 16MHz with a baudrate 500kb/s and the masks and filters disabled.
-  if(mcp2515.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
+  if(mcp2515.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK){
     //Serial.println("MCP2515 Initialized Successfully!");
-  else
+  }else {
     Serial.println("Error Initializing MCP2515...");
-  
+  }
   mcp2515.setMode(MCP_NORMAL);
   
   pinMode(CAN_INT, INPUT);
-
+  
 
   /// NRF24L01 Intialization ///
 
@@ -70,7 +66,6 @@ void setup()
     Serial.println("No connection between nRF24L01 and Arduino! ");
   }
 }
-
 
 void loop() {
   if(!digitalRead(CAN_INT))                         // If CAN0_INT pin is low, read receive buffer
@@ -104,7 +99,7 @@ void loop() {
   }
 }
 
-int receiveNumber(rxBuf) {
+int receiveNumber(byte *rxBuf) {
   int sensor_Value = (rxBuf[1] << 8) | rxBuf[0];
   return sensor_Value;
 }
