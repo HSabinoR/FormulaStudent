@@ -1,7 +1,7 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-const int sensorPin = A0;
+const int sensorPin = A1;
 
 MCP_CAN mcp2515(10);    // CS pin connected to digital pin 10
 
@@ -25,10 +25,10 @@ void sendNumber(uint32_t id, int ext, int dlc, int sensorValue) {
   byte data[dlc] = {};
 
   //data[0] = sensorValue;
-   
+  // splits the 16 bit int number into two bytes
   data[0] = lowByte(sensorValue);
   data[1] = highByte(sensorValue);
-  
+
   mcp2515.sendMsgBuf(id, ext, dlc, data);
 }
 
