@@ -4,6 +4,7 @@
 #include <config.h>
 #include <RF24.h>
 #include <nRF24L01.h>
+#include <printf.h>
 
 class nRF24Handler{
     public:

@@ -11,7 +11,7 @@ void CANBUSHandler::CANsetup(){
 
      // Initialize MCP2515 running at 16MHz with a baudrate 500kb/s and the masks and filters disabled.
     if(mcp2515.begin(MCP_ANY, can_DataRate, can_clock_speed) == CAN_OK){
-    //Serial.println("MCP2515 Initialized Successfully!");
+        //Serial.println("MCP2515 Initialized Successfully!");
     }else {
         Serial.println("Error Initializing MCP2515...");
     }
