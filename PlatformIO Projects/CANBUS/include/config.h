@@ -1,6 +1,8 @@
 #ifndef config_h
 #define config_h
 
+#define debuggingMode False;
+
 struct Payload {
     static int brake_power;
     static int throttle_power;
