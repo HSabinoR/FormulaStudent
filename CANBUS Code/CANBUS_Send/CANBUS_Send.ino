@@ -2,7 +2,7 @@
 #include <SPI.h>
 
 const int sensorPin = A1;
-
+int old_value;
 MCP_CAN mcp2515(10);    // CS pin connected to digital pin 10
 
 void setup() {
@@ -17,8 +17,15 @@ void setup() {
 }
 
 void loop() {
+  // Double read
   int raw_Value = analogRead(sensorPin);
-  sendNumber(0x123, 0, 2, raw_Value);
+  int raw_Value = analogRead(sensorPin);
+
+  raw_Value = constrain(5, 1023);
+  if (raw_Value < (old_value - 2) || raw_Value > (old_value + 2)){
+    old_value = raw_Value; // Change this to low pass filter
+  }
+  sendNumber(0x123, 0, 2, old_value);
 }
 
 void sendNumber(uint32_t id, int ext, int dlc, int sensorValue) {
