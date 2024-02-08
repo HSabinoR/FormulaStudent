@@ -83,7 +83,7 @@ void loop() {
     }    
 
     if(radio.write(&payload, sizeof(payload))) {
-      /*Serial.print("Brake Power: ");
+      Serial.print("Brake Power: ");
       Serial.print("Sent: (");
       Serial.print(payload.brake_power);
       Serial.print(" | Throttle Power: ");
@@ -91,7 +91,6 @@ void loop() {
       Serial.print(" | Wheel Angle: ");
       Serial.print(payload.wheel_angle);
       Serial.println(")");
-      */
     }else {
       Serial.println("Error! Payload not sent");
     }
