@@ -35,11 +35,9 @@ void setup()
 
   // Initialize MCP2515 running at 16MHz with a baudrate 500kb/s and the masks and filters disabled.
   if(mcp2515.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK){
-    if (debuggingMode == True) {
-      Serial.println("MCP2515 Initialized Successfully!");
-    }else if(mcp2515.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) != CAN_OK){
-      Serial.println("Error Initializing MCP2515...");
-    }
+    //Serial.println("MCP2515 Initialized Successfully!");
+  }else {
+    Serial.println("Error Initializing MCP2515...");
   }
   mcp2515.setMode(MCP_NORMAL);
   
