@@ -10,8 +10,8 @@ unsigned char rxBuf[2];
 #define CAN_INT 2 // Set INT to pin 2
 MCP_CAN mcp2515(10); // Set CS to pin 10
 
-#define CE_PIN 9
-#define CSN_PIN 10
+#define CE_PIN 6
+#define CSN_PIN 5
 
 #define INTERVAL_MS_TRANSMISSION 2
 
